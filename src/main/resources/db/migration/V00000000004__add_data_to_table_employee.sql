@@ -1,0 +1,2 @@
+insert into Employee (first_name, last_name,department, email, phone_number, salary) values ('name','last',1,'email',123,2.0);
+insert into Employee (first_name, last_name,department, email, phone_number, salary) values ('name2','last2',2,'email2',124,3.0);
