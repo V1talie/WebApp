@@ -5,5 +5,5 @@ CREATE TABLE Department
     location      VARCHAR(255) NOT NULL,
     CONSTRAINT name_len CHECK (LENGTH(RTRIM(name)) > 1),
     CONSTRAINT location__len CHECK (LENGTH(RTRIM(location)) > 1),
-    CONSTRAINT name_loca_uniq UNIQUE (name, location)
+    CONSTRAINT name_location_uniq UNIQUE (name, location)
 );
