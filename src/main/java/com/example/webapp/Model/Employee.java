@@ -10,6 +10,7 @@ import org.hibernate.annotations.Check;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,43 +27,43 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
-    @NotBlank
-    @NotEmpty
-    private String first_name;
+    @NotBlank(message = "First name can't be blank!")
+    @NotEmpty(message = "First name can't be empty!")
+    private String firstName;
 
     @Column(nullable = false)
-    @NotBlank
-    @NotEmpty
-    private String last_name;
+    @NotBlank(message = "Last name can't be blank!")
+    private String lastName;
+
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departmentId", nullable = false)
     private Department department;
 
     @Column(nullable = false, unique = true)
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Email can't be blank!")
     private String email;
 
     @Column(nullable = false, unique = true)
-    private int phone_number;
+    private Integer phoneNumber;
 
     @Column(nullable = false)
     @Check(constraints = "salary >= 1.0")
     private double salary;
 
-    public Employee(String first_name, String last_name, Department department, String email, int phone_number, double salary) {
-        this.first_name = first_name;
-        this.last_name = last_name;
+    public Employee(String firstName, String lastName, Department department, String email, int phoneNumber, double salary) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.department = department;
         this.email = email;
-        this.phone_number = phone_number;
+        this.phoneNumber = phoneNumber;
         this.salary = salary;
     }
 

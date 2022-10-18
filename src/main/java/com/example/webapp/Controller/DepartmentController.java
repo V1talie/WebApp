@@ -1,47 +1,54 @@
 package com.example.webapp.Controller;
 
-import com.example.webapp.Model.Department;
 import com.example.webapp.Service.DepartmentService;
 import com.example.webapp.dto.DepartmentDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/departments")
 public class DepartmentController {
 
-    @Autowired
-    DepartmentService departmentService;
 
-    @GetMapping("/departments")
-    public ResponseEntity<List<Department>> getDepartments() {
-        List<Department> list = departmentService.getAll();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    private final DepartmentService departmentService;
+
+    @GetMapping
+    public ResponseEntity<List<DepartmentDTO>> getDepartments() {
+        List<DepartmentDTO> departmentList = departmentService.getAll();
+        if (CollectionUtils.isEmpty(departmentList)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(departmentList);
+        }
+        return ResponseEntity.ok(departmentList);
     }
 
-    @GetMapping("/departments/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable long id) {
-        Department byId = departmentService.getById(id);
-        return new ResponseEntity<>(byId, HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable long id) {
+        return ResponseEntity.ok(departmentService.getById(id));
     }
 
-    @PostMapping("/departments")
-    public ResponseEntity<DepartmentDTO> addDepartment(@RequestBody DepartmentDTO department) {
+    @PostMapping
+    public ResponseEntity<DepartmentDTO> addDepartment(@Valid @RequestBody DepartmentDTO department) {
         departmentService.add(department);
-        return new ResponseEntity<>(department, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED).body(department);
     }
 
-    @PutMapping("/departments/{id}")
-    public ResponseEntity<Department> updateDepartment(@PathVariable long id, @RequestBody DepartmentDTO department) {
-        Department update = departmentService.updateDepartment(id, department);
-        return new ResponseEntity<>(update, HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<DepartmentDTO> updateDepartment(@PathVariable long id, @Valid @RequestBody DepartmentDTO department) {
+        DepartmentDTO update = departmentService.updateDepartment(id, department);
+        return ResponseEntity.status(HttpStatus.CREATED).body(update);
+
     }
 }

@@ -1,18 +1,37 @@
 package com.example.webapp.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Data
 @Builder
+@AllArgsConstructor
 public class EmployeeDTO {
-    private long id;
-    private String first_name;
-    private String last_name;
+
+    private Long id;
+
+    @NotBlank(message = "First name can't be blank!")
+    private String firstName;
+
+    @NotBlank(message = "Last name can't be blank!")
+    private String lastName;
+
+    @NotNull(message = "Department_id can't be null")
+    private Long departmentId;
+
+    @NotBlank(message = "Email can't be blank!")
     private String email;
-    private int phone_number;
+
+    @NotNull(message = "Phone number can't be null")
+    private Integer phoneNumber;
+
+    @Min(1)
     private double salary;
-    private long department_id;
+
+
 }

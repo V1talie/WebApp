@@ -1,66 +1,62 @@
 package com.example.webapp.Service;
 
+import com.example.webapp.Exception.DepartmentNotFoundException;
 import com.example.webapp.Model.Department;
 import com.example.webapp.Repository.DepartmentRepository;
 import com.example.webapp.dto.DepartmentDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class DepartmentService {
-    @Autowired
-    DepartmentRepository departmentRepository;
+import static com.example.webapp.Model.Department.convertDTOtoENT;
+import static com.example.webapp.Model.Department.convertENTtoDTO;
 
-    public List<Department> getAll() {
-        List<Department> departmentList = new ArrayList<>();
-        departmentRepository.findAll().forEach(department -> departmentList.add(department));
-        if (departmentList.isEmpty()) {
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class DepartmentService {
+
+    private final DepartmentRepository departmentRepository;
+
+    public List<DepartmentDTO> getAll() {
+        List<DepartmentDTO> departmentList = new ArrayList<>();
+        departmentRepository.findAll().forEach(department -> departmentList.add(convertENTtoDTO(department)));
+        if (CollectionUtils.isEmpty(departmentList)) {
             return Collections.emptyList();
         }
         return departmentList;
     }
 
-    public Department getById(long id) {
-        Optional<Department> dep = departmentRepository.findById(id);
-        return dep.orElse(null);
+    public DepartmentDTO getById(long id) {
+        Optional<Department> departmentById = departmentRepository.findById(id);
+        if (departmentById.isPresent()) {
+            return convertENTtoDTO(departmentById.get());
+        }
+        throw new DepartmentNotFoundException("Department with id " + id + " not found");
     }
 
-    public DepartmentDTO add(DepartmentDTO department) {
+    public DepartmentDTO add(final DepartmentDTO department) {
         departmentRepository.save(convertDTOtoENT(department));
         return department;
     }
 
-    public Department updateDepartment(long id, DepartmentDTO department) {
+    public DepartmentDTO updateDepartment(long id, final DepartmentDTO department) {
         Optional<Department> departmentData = departmentRepository.findById(id);
         if (departmentData.isPresent()) {
             Department newDep = departmentData.get();
             newDep.setName(department.getName());
             newDep.setLocation(department.getLocation());
             departmentRepository.save(newDep);
-            return newDep;
+            return convertENTtoDTO(newDep);
         } else {
-            return null;
+            throw new DepartmentNotFoundException("Department with id " + id + "not found");
         }
     }
 
-    public Department convertDTOtoENT(DepartmentDTO departmentDTO) {
-        return Department.builder()
-                .department_id(departmentDTO.getId())
-                .name(departmentDTO.getName())
-                .location(departmentDTO.getLocation())
-                .build();
-    }
-
-//    public DepartmentDTO convertENTtoDTO(Department department) {
-//        return DepartmentDTO.builder()
-//                .id(department.getDepartment_id())
-//                .name(department.getName())
-//                .location(department.getLocation())
-//                .build();
-//    }
 }
